@@ -96,12 +96,12 @@ func main() {
 
 	credential := options.Credential{
 		AuthMechanism: "SCRAM-SHA-1",
-		AuthSource:    "newsdb",
-		Username:      "newsuser",
-		Password:      "krhZ9Mcsn5bOJKr",
+		AuthSource:    "db_name",
+		Username:      "db_user",
+		Password:      "db_password",
 	}
 
-	clientOptions := options.Client().ApplyURI("mongodb://172.27.16.5:27017").SetAuth(credential)
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017").SetAuth(credential)
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal("Failed to connect to MongoDB: ", err)
@@ -136,7 +136,7 @@ func main() {
 	}
 
 	// ตั้งค่า PostgreSQL
-	pgConnStr := "user=susmart password=XLFEqBew1uT7bKh dbname=smartplus host=172.27.16.5 sslmode=disable"
+	pgConnStr := "user=db_user password=db_password dbname=db_name host=localhost port=5432 sslmode=disable"
 	pgDB, err := sql.Open("postgres", pgConnStr)
 	if err != nil {
 		log.Fatal(err)
@@ -234,25 +234,6 @@ func main() {
 		}
 		mergedData = append(mergedData, mergeDataItem)
 	}
-
-	// // ทำการ join ข้อมูล
-	// var mergedData []MergedData
-	// for _, mongoItem := range mongoData {
-	// 	for _, pgItem := range pgData {
-	// 		mergeDataItem := MergedData{
-	// 			CollectedDate: mongoItem.CollectedDate,
-	// 			UsedDate:      mongoItem.UsedDate,
-	// 			Status:        mongoItem.Status,
-	// 			StudentName:   mongoItem.StudentName,
-	// 		}
-	// 		if mongoItem.StudentID == pgItem.StudentID {
-	// 			mergeDataItem.StudentCode = *pgItem.StudentCode
-	// 			mergeDataItem.PrefixName = *pgItem.PrefixName
-	// 			mergeDataItem.FacultyName = *pgItem.FacultyName
-	// 		}
-	// 		mergedData = append(mergedData, mergeDataItem)
-	// 	}
-	// }
 
 	// บันทึกข้อมูลลงในไฟล์ CSV
 	csvFile, err := os.Create("merged_data.csv")
